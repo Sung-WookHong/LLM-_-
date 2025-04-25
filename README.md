@@ -100,7 +100,9 @@ system_prompt = ChatPromptTemplate(
 
 ### 문제 상황 2: 상사의 답변이 무조건 부정적
 
-처음엔 하나의 프롬프트로 상사의 역할을 설정.
+- 처음엔 하나의 프롬프트로 상사의 역할을 설정.
+- 유저가 아무리 정중한 말을 해도 상사는 계속 비꼬고 혼내기만 함.
+- GPT는 "직장 상사의 캐릭터"를 유지하려다 보니 부정적인 톤만 반복.
 
 ```python
 supervisor = SystemMessage(content=(
@@ -119,12 +121,20 @@ supervisor = SystemMessage(content=(
 ))
 ```
 
-- 유저가 아무리 정중한 말을 해도 상사는 계속 비꼬고 혼내기만 함.
-- GPT는 "직장 상사의 캐릭터"를 유지하려다 보니 부정적인 톤만 반복.
+- 프롬프트 이원화 (긍정 / 부정)를 통해 유저의 대답이 긍정적인 상황에서는 긍정적인 답변 유도
+- 입력 문장을 분석하여 어떤 타입의 문장인지 확인
+```
+candidate_labels=['기쁨', '칭찬', '죄송', '비판', '비난', '비꼼']
 
-### 문제 해결 2: 프롬프트 이원화 (긍정 / 부정)
+input_status = ko_zero_shot_clf(input_, candidate_labels=candidate_labels)
+input_status = input_status['labels'][:3]
+
+if sum([item in candidate_labels[3:] for item in input_status]) >= 2 or input_status[0] == '죄송':
+    positive_count += 1
+```
+
 - 긍정 프롬프트에는 상사의 말투 제거
-
+  
 ```
 positive_supervisor = (
     "너(AI)는 아래 상황에서 유저와 역할극을 수행하는 직장 상사 역할을 맡았다.\n"
