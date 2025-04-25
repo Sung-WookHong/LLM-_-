@@ -68,6 +68,22 @@ messages = [
     ]
 ```
 
+3. 상사의 응답에서 감정 분석
+- 상사의 답변이 `negative`일 확률이 0.8 이상일 경우 `stack`이 축적됨
+- 이 경우 상사가 화난 사진이 출력되어 유저가 확인 가능
+- stack이 10번 쌓일 경우 `해고`처리
+  
+```
+emotion = ko_sentiment_clf(response)
+if emotion[0]['label'] == 'negative' and emotion[0]['score'] > 0.8:
+    stack += 1
+    image_path = "images/img_angry.png"
+
+if stack >= 10:
+    chat_history.append("상사: =======당신은 해고되었습니다=======")
+    return "\n".join(chat_history), image_path, [first_message_flag, chat_history]
+```
+
 ## 시행착오와 개선 과정
 
 ### 문제 상황 1: 계속 같은 상황이 반복됨
