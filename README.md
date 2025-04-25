@@ -81,7 +81,8 @@ messages = [
 ```
 
 - 채팅을 입력할 때 마다 다음 단계로 넘어가도 되는지 분석
-- 현재 상황이 해결되었다 판단되면, True 반환. <상황1>에서 <상황2>로 반환
+- 현재 상황이 해결되었다 판단되면, True 반환. 
+- True가 나오면 <상황1>에서 <상황2>로 변경
 ```
 system_prompt = ChatPromptTemplate(
     messages = [
